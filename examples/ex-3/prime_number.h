@@ -1,0 +1,1 @@
+int CountPrimes(int limit);
