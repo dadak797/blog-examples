@@ -1,28 +1,42 @@
 function computeStats(times) {
+  if (times.length < 2) {
+    throw new Error("At least two timed runs are required.");
+  }
+
   const n = times.length;
-  const mean = times.reduce((a, b) => a + b, 0) / n;
 
-  const sorted = [...times].sort((a, b) => a - b);
-  const mid = Math.floor(n / 2);
-  const median =
-    n % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  // Mean
+  let sum = 0;
+  for (const time of times) {
+    sum += time;
+  }
+  const mean = sum / n;
 
-  const variance = times.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1);
+  // Variance
+  let squaredDiffSum = 0;
+  for (const time of times) {
+    const diff = time - mean;
+    squaredDiffSum += diff * diff;
+  }
+  const variance = squaredDiffSum / n;
   const stddev = Math.sqrt(variance);
 
-  return { mean, median, stddev, min: sorted[0] };
+  return { mean, stddev };
 }
 
-function runBenchmark(label, warmupRuns, timedRuns, fn) {
-  console.log(`\n=== ${label} ===`);
-
+function runBenchmark(label, warmupRuns, timedRuns, expectedResult, fn) {
+  const warmupTimes = [];
   for (let i = 0; i < warmupRuns; ++i) {
     const start = performance.now();
     const result = fn();
     const end = performance.now();
-    console.log(
-      `[${label} warmup ${i}] ${(end - start).toFixed(3)} ms, primes=${result}`,
-    );
+    if (result !== expectedResult) {
+      throw new Error(
+        `${label} returned ${result}, expected ${expectedResult}`,
+      );
+    }
+    const elapsed = end - start;
+    warmupTimes.push(elapsed);
   }
 
   const times = [];
@@ -30,19 +44,20 @@ function runBenchmark(label, warmupRuns, timedRuns, fn) {
     const start = performance.now();
     const result = fn();
     const end = performance.now();
+    if (result !== expectedResult) {
+      throw new Error(
+        `${label} returned ${result}, expected ${expectedResult}`,
+      );
+    }
     const elapsed = end - start;
     times.push(elapsed);
-    console.log(
-      `[${label} run ${i}] ${elapsed.toFixed(3)} ms, primes=${result}`,
-    );
   }
 
-  const { mean, median, stddev, min } = computeStats(times);
-  console.log(`--- ${label} stats (n=${timedRuns}) ---`);
-  console.log(
-    `mean=${mean.toFixed(3)} ms, median=${median.toFixed(3)} ms, ` +
-      `stddev=${stddev.toFixed(3)} ms, min=${min.toFixed(3)} ms`,
-  );
+  return { label, warmupTimes, times };
+}
 
-  return { label, mean, median, stddev, min };
+function waitForPaint() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => setTimeout(resolve, 0));
+  });
 }

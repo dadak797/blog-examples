@@ -2,10 +2,45 @@
 <html>
   <head>
     <title>Emscripten Example-3</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 8px;
+      }
+    </style>
   </head>
   <body>
+    <h1>JavaScript vs. WebAssembly</h1>
+    <p>
+      Count the prime numbers up to 1,000,000 after 2 warm-up runs, then measure
+      30 runs. Close DevTools before starting the benchmark. Refresh the page to
+      run the benchmark again.
+    </p>
+    <button id="run-benchmark" type="button" disabled>Run Benchmark</button>
+    <section id="results" hidden>
+      <h2>Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Runtime</th>
+            <th scope="col">Mean</th>
+            <th scope="col">Stddev</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </section>
     <script type="text/javascript" src="common.js"></script>
     <script type="text/javascript" src="js_prime_number.js"></script>
     <script type="text/javascript" src="wasm_prime_number.js"></script>
+    <script type="text/javascript" src="benchmark.js"></script>
   </body>
 </html>

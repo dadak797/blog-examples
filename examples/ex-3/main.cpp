@@ -1,15 +1,15 @@
 #include "prime_number.h"
 
-#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iostream>
-#include <numeric>
+#include <stdexcept>
 #include <vector>
 
 namespace {
 
 const int LAST_NUMBER = 1000000;
+const int PRIME_COUNT = 78498;
 const int WARMUP_RUNS = 2;
 const int TIMED_RUNS = 30;
 
@@ -20,55 +20,71 @@ double ElapsedMs(std::chrono::steady_clock::time_point start,
 
 struct Stats {
   double mean;
-  double median;
   double stddev;
-  double min;
 };
 
-Stats ComputeStats(std::vector<double> times) {
+Stats ComputeStats(const std::vector<double>& times) {
+  if (times.size() < 2) {
+    throw std::invalid_argument("At least two timed runs are required.");
+  }
+
   const size_t n = times.size();
-  const double mean = std::accumulate(times.begin(), times.end(), 0.0) / n;
 
-  std::sort(times.begin(), times.end());
-  const double median = (n % 2 == 0)
-      ? (times[n / 2 - 1] + times[n / 2]) / 2.0
-      : times[n / 2];
+  // Mean
+  double sum = 0.0;
+  for (const double time : times) {
+    sum += time;
+  }
+  const double mean = sum / n;
 
-  double variance = 0.0;
-  for (double t : times) variance += (t - mean) * (t - mean);
-  variance /= (n - 1);
+  // Variance
+  double squaredDiffSum = 0.0;
+  for (const double time : times) {
+    const double diff = time - mean;
+    squaredDiffSum += diff * diff;
+  }
+  const double variance = squaredDiffSum / n;
+  const double stddev = std::sqrt(variance);
 
-  return { mean, median, std::sqrt(variance), times.front() };
+  return { mean, stddev };
 }
 
 }  // namespace
 
 int main() {
+  std::vector<double> warmupTimes;
+  warmupTimes.reserve(WARMUP_RUNS);
   std::vector<double> times;
+  times.reserve(TIMED_RUNS);
 
   for (int i = 0; i < WARMUP_RUNS; ++i) {
-    auto start = std::chrono::steady_clock::now();
-    int primeCount = CountPrimes(LAST_NUMBER);
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "[Native warmup " << i << "] " << ElapsedMs(start, end)
-               << " ms, primes=" << primeCount << std::endl;
+    const auto start = std::chrono::steady_clock::now();
+    const int result = CountPrimes(LAST_NUMBER);
+    const auto end = std::chrono::steady_clock::now();
+    if (result != PRIME_COUNT) {
+      throw std::runtime_error(
+          "Native returned an unexpected result during warmup.");
+    }
+    const double elapsed = ElapsedMs(start, end);
+    warmupTimes.push_back(elapsed);
   }
 
   for (int i = 0; i < TIMED_RUNS; ++i) {
-    auto start = std::chrono::steady_clock::now();
-    int primeCount = CountPrimes(LAST_NUMBER);
-    auto end = std::chrono::steady_clock::now();
-    double elapsed = ElapsedMs(start, end);
+    const auto start = std::chrono::steady_clock::now();
+    const int result = CountPrimes(LAST_NUMBER);
+    const auto end = std::chrono::steady_clock::now();
+    if (result != PRIME_COUNT) {
+      throw std::runtime_error(
+          "Native returned an unexpected result during timed run.");
+    }
+    const double elapsed = ElapsedMs(start, end);
     times.push_back(elapsed);
-    std::cout << "[Native run " << i << "] " << elapsed
-               << " ms, primes=" << primeCount << std::endl;
   }
 
   Stats s = ComputeStats(times);
   std::cout << "--- Native stats (n=" << TIMED_RUNS << ") ---" << std::endl;
-  std::cout << "mean=" << s.mean << " ms, median=" << s.median
-             << " ms, stddev=" << s.stddev << " ms, min=" << s.min << " ms"
-             << std::endl;
+  std::cout << "mean=" << s.mean << " ms, stddev=" << s.stddev << " ms"
+            << std::endl;
 
   return 0;
 }
