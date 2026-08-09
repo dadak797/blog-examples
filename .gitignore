@@ -1,2 +1,7 @@
 # Ignore Mac system files
 .DS_Store
+
+# ex-4
+examples/ex-4/index.html
+examples/ex-4/index.js
+examples/ex-4/index.wasm
