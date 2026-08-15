@@ -10,3 +10,8 @@ examples/ex-4/index.wasm
 examples/ex-5/index.html
 examples/ex-5/index.js
 examples/ex-5/index.wasm
+
+# ex-6
+examples/ex-6/index.html
+examples/ex-6/index.js
+examples/ex-6/index.wasm
