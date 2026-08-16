@@ -1,6 +1,21 @@
 # Ignore Mac system files
 .DS_Store
 
+# ex-1
+examples/ex-1/index.html
+examples/ex-1/index.js
+examples/ex-1/index.wasm
+
+# ex-2
+examples/ex-2/index.html
+examples/ex-2/index.js
+examples/ex-2/index.wasm
+
+# ex-3
+examples/ex-3/index.html
+examples/ex-3/index.js
+examples/ex-3/index.wasm
+
 # ex-4
 examples/ex-4/index.html
 examples/ex-4/index.js
@@ -15,3 +30,8 @@ examples/ex-5/index.wasm
 examples/ex-6/index.html
 examples/ex-6/index.js
 examples/ex-6/index.wasm
+
+# ex-7
+examples/ex-7/index.html
+examples/ex-7/index.js
+examples/ex-7/index.wasm
