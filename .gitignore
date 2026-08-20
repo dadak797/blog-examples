@@ -40,3 +40,11 @@ examples/ex-7/index.wasm
 examples/ex-8/index.html
 examples/ex-8/index.js
 examples/ex-8/index.wasm
+
+# ex-9
+examples/ex-9/module_ab.js
+examples/ex-9/module_ab.wasm
+examples/ex-9/module_a.js
+examples/ex-9/module_a.wasm
+examples/ex-9/module_b.js
+examples/ex-9/module_b.wasm
