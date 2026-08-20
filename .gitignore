@@ -48,3 +48,7 @@ examples/ex-9/module_a.js
 examples/ex-9/module_a.wasm
 examples/ex-9/module_b.js
 examples/ex-9/module_b.wasm
+
+# ex-10
+examples/ex-10/stdout_stderr.js
+examples/ex-10/stdout_stderr.wasm
