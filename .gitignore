@@ -1,6 +1,9 @@
 # Ignore Mac system files
 .DS_Store
 
+# VS Code settings
+.vscode/
+
 # ex-1
 examples/ex-1/index.html
 examples/ex-1/index.js
@@ -52,3 +55,7 @@ examples/ex-9/module_b.wasm
 # ex-10
 examples/ex-10/stdout_stderr.js
 examples/ex-10/stdout_stderr.wasm
+
+# ex-11
+examples/ex-11/array_json.js
+examples/ex-11/array_json.wasm
