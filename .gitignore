@@ -59,3 +59,7 @@ examples/ex-10/stdout_stderr.wasm
 # ex-11
 examples/ex-11/array_json.js
 examples/ex-11/array_json.wasm
+
+# ex-12
+examples/ex-12/array_std.js
+examples/ex-12/array_std.wasm
