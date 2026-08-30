@@ -63,3 +63,7 @@ examples/ex-11/array_json.wasm
 # ex-12
 examples/ex-12/array_std.js
 examples/ex-12/array_std.wasm
+
+# ex-13
+examples/ex-13/memory_view.js
+examples/ex-13/memory_view.wasm
