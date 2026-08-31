@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Emscripten Example-14</title>
+  </head>
+  <body>
+    <!-- Select multiple OBJ files -->
+    <div>
+      <label for="fileInput">Select OBJ Files</label>
+      <input type="file" accept=".obj" id="fileInput" disabled multiple />
+    </div>
+    <!-- Display the OBJ file summary -->
+    <h3 id="shape-info" style="white-space: pre-wrap"></h3>
+    <!-- Button for merging and downloading OBJ files -->
+    <button
+      id="download-obj"
+      onclick="Module.mergeAndDownloadObjFiles()"
+      disabled
+    >
+      Merge and Download OBJ
+    </button>
+    <!-- Enable the OBJ file picker after the Wasm module is initialized -->
+    <script>
+      Module = {
+        onRuntimeInitialized: () => {
+          document.getElementById("fileInput").disabled = false;
+        },
+      };
+    </script>
+    <script async type="text/javascript" src="memfs.js"></script>
+    <script>
+      const fileInput = document.getElementById("fileInput");
+      fileInput.addEventListener("change", async (event) => {
+        let filenames = [];
+        for (const file of event.target.files) {
+          const buffer = await file.arrayBuffer();
+          const typedArray = new Uint8Array(buffer);
+          // Write the file to MEMFS
+          Module.FS.writeFile(file.name, typedArray);
+          // Add the file name to the array
+          filenames.push(file.name);
+        }
+        // Load the OBJ files from MEMFS and retrieve their summaries
+        const summary = Module.loadObjFile(JSON.stringify(filenames));
+        if (summary === undefined) {
+          console.error("Failed to load OBJ files.");
+          return;
+        }
+        // Parse the summaries as JSON and display them on the page
+        const shapes = JSON.parse(summary);
+        const shapeInfoDiv = document.getElementById("shape-info");
+        shapeInfoDiv.textContent = JSON.stringify(shapes, null, 2);
+        // Enable the download button after all files have been read
+        document.getElementById("download-obj").disabled = false;
+      });
+    </script>
+  </body>
+</html>

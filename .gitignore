@@ -67,3 +67,7 @@ examples/ex-12/array_std.wasm
 # ex-13
 examples/ex-13/memory_view.js
 examples/ex-13/memory_view.wasm
+
+# ex-14
+examples/ex-14/memfs.js
+examples/ex-14/memfs.wasm
