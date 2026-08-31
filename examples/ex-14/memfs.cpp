@@ -77,6 +77,9 @@ std::optional<std::string> LoadObjFiles(const std::string& filenames) {
       nullptr,
       false  // Set to true to triangulate every face
     );
+
+    fs::remove(filename.c_str());  // Remove the OBJ file from MEMFS after reading it
+
     if (!warn.empty()) {
       std::cout << "Warning: " << warn << std::endl;
     }
@@ -118,8 +121,6 @@ std::optional<std::string> LoadObjFiles(const std::string& filenames) {
         {"ngonFaces", ngonFaceCount},
         {"renderTriangles", renderTriangleCount}
       });
-
-      std::remove(filename.c_str());  // Remove the OBJ file from MEMFS after reading it
     }
 
     // Store the file name, vertex attributes, and shapes in g_ObjFiles
@@ -203,7 +204,7 @@ void MergeAndDownloadObjFiles() {
           std::cerr << "Invalid face indices in " << loadedObj.filename
                     << std::endl;
           output.close();
-          std::remove(MERGED_OBJ_FILE);
+          fs::remove(MERGED_OBJ_FILE);
           return;
         }
 
@@ -214,7 +215,7 @@ void MergeAndDownloadObjFiles() {
             std::cerr << "Missing vertex index in " << loadedObj.filename
                       << std::endl;
             output.close();
-            std::remove(MERGED_OBJ_FILE);
+            fs::remove(MERGED_OBJ_FILE);
             return;
           }
 
@@ -251,7 +252,7 @@ void MergeAndDownloadObjFiles() {
   output.close();
   if (!output) {
     std::cerr << "Failed to write merged OBJ file." << std::endl;
-    std::remove(MERGED_OBJ_FILE);
+    fs::remove(MERGED_OBJ_FILE);
     return;
   }
 
@@ -287,7 +288,7 @@ void MergeAndDownloadObjFiles() {
   }, MERGED_OBJ_FILE);
 
   // Remove the merged file from MEMFS after starting the download
-  std::remove(MERGED_OBJ_FILE);
+  fs::remove(MERGED_OBJ_FILE);
 }
 
 EMSCRIPTEN_BINDINGS(my_module) {
