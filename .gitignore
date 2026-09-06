@@ -71,3 +71,7 @@ examples/ex-13/memory_view.wasm
 # ex-14
 examples/ex-14/memfs.js
 examples/ex-14/memfs.wasm
+
+# ex-15
+examples/ex-15/em_wget.js
+examples/ex-15/em_wget.wasm
