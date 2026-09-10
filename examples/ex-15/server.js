@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
 import { fileURLToPath } from "url";
 
 const app = express();
@@ -15,7 +14,8 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 
 // CORS 설정
-// http://localhost:8080에서 오는 요청만 허용
+// 다른 origin에서 실행되는 클라이언트의 API 호출 허용
+// 예: http://localhost:8080 → http://localhost:3000
 app.use(
   cors({
     origin: "http://localhost:8080",
@@ -37,6 +37,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// API 생성
 // 1. GET 요청
 app.get("/hello", (req, res) => {
   res.json({
@@ -92,19 +93,9 @@ app.post("/upload", upload.single("uploadFile"), (req, res) => {
 // 5. 파일 스트리밍과 다운로드
 app.get("/models/:filename", (req, res) => {
   const filesDir = path.join(__dirname, "models");
-  const filePath = path.join(filesDir, req.params.filename);
 
-  // 최종 경로가 files 폴더를 벗어나지 않는지 확인
-  if (!filePath.startsWith(filesDir + path.sep)) {
-    return res.status(400).json({ error: "Invalid file path" });
-  }
-
-  // 파일이 실제로 존재하는지 확인
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: "File not found" });
-  }
-
-  res.sendFile(filePath);
+  // root 옵션을 지정하면 Express가 파일 경로를 models 폴더 내부로 제한함
+  res.sendFile(req.params.filename, { root: filesDir });
 });
 
 app.listen(port, () => {

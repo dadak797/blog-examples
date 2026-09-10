@@ -74,7 +74,6 @@ examples/ex-14/memfs.wasm
 
 # ex-15
 examples/ex-15/node_modules/
-examples/ex-15/uploads/
 
 # ex-16
 examples/ex-16/em_wget.js
