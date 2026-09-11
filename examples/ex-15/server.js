@@ -8,14 +8,11 @@ const app = express();
 const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// JSON POST 요청 처리 설정
-// 요청의 Content-Type이 application/json 일 때 동작함
-app.use(express.json());
+const uploadDir = path.join(__dirname, "uploads");
 
 // CORS 설정
-// 다른 origin에서 실행되는 클라이언트의 API 호출 허용
-// 예: http://localhost:8080 → http://localhost:3000
+// http://localhost:8080에서 실행되는 별도의 클라이언트가
+// http://localhost:3000의 API를 호출할 수 있도록 허용
 app.use(
   cors({
     origin: "http://localhost:8080",
@@ -23,11 +20,15 @@ app.use(
   }),
 );
 
+// JSON POST 요청 처리 설정
+// 요청의 Content-Type이 application/json 일 때 동작함
+app.use(express.json());
+
 // 업로드된 파일 저장 위치 설정
 // 기본적으로 파일명은 무작위로 생성되지만, 여기서는 파일이름에 타임스탬프를 붙여 고유하게 만듦
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -36,6 +37,11 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
+
+// Home
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // API 생성
 // 1. GET 요청
@@ -81,21 +87,19 @@ app.post("/upload", upload.single("uploadFile"), (req, res) => {
     });
   }
 
-  console.log(req.file);
-
   res.json({
     message: "File uploaded successfully",
-    filename: req.file.originalname,
+    originalName: req.file.originalname,
+    filename: req.file.filename,
     size: req.file.size,
+    downloadUrl: `/download/${encodeURIComponent(req.file.filename)}`,
   });
 });
 
-// 5. 파일 스트리밍과 다운로드
-app.get("/models/:filename", (req, res) => {
-  const filesDir = path.join(__dirname, "models");
-
-  // root 옵션을 지정하면 Express가 파일 경로를 models 폴더 내부로 제한함
-  res.sendFile(req.params.filename, { root: filesDir });
+// 5. 파일 다운로드
+app.get("/download/:filename", (req, res) => {
+  // root 옵션을 지정하면 Express가 파일 경로를 uploads 폴더 내부로 제한함
+  res.sendFile(req.params.filename, { root: uploadDir });
 });
 
 app.listen(port, () => {
