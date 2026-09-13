@@ -78,3 +78,7 @@ examples/ex-15/node_modules/
 # ex-16
 examples/ex-16/em_wget.js
 examples/ex-16/em_wget.wasm
+
+# ex-17
+examples/ex-17/em_fetch.js
+examples/ex-17/em_fetch.wasm
