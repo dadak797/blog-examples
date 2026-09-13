@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <cstring>
 
 void onLoadWget(const char* filename) {
   std::cout << "File downloaded: " << filename << std::endl;
