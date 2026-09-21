@@ -82,3 +82,6 @@ examples/ex-16/em_wget.wasm
 # ex-17
 examples/ex-17/em_fetch.js
 examples/ex-17/em_fetch.wasm
+
+# ex-18
+examples/ex-18/build/
