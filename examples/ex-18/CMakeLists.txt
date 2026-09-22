@@ -2,8 +2,11 @@ cmake_minimum_required(VERSION 3.20)
 
 project(ex-18 LANGUAGES C CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_executable(main main.cpp)
-target_compile_features(main PRIVATE cxx_std_17)
 
 if(EMSCRIPTEN)
   # Use the GLFW implementation included with Emscripten
@@ -32,6 +35,7 @@ else()
   )
   FetchContent_MakeAvailable(glfw)
 
+  # GLAD library for loading OpenGL functions
   add_library(glad STATIC
     third_party/glad/src/gl.c
   )
@@ -40,5 +44,30 @@ else()
     third_party/glad/include
   )
 
-  target_link_libraries(main PRIVATE glfw glad)
+  target_link_libraries(main PRIVATE glad)
 endif()
+
+# IMGUI library for graphical user interfaces(GUI)
+add_library(imgui STATIC
+  third_party/imgui/imgui_demo.cpp
+  third_party/imgui/imgui_draw.cpp
+  third_party/imgui/imgui_impl_glfw.cpp
+  third_party/imgui/imgui_impl_opengl3.cpp
+  third_party/imgui/imgui_tables.cpp
+  third_party/imgui/imgui_widgets.cpp
+  third_party/imgui/imgui.cpp
+)
+
+target_include_directories(imgui PUBLIC
+  third_party/imgui
+)
+
+if(EMSCRIPTEN)
+  target_compile_definitions(imgui PUBLIC
+    IMGUI_IMPL_OPENGL_ES3
+  )
+else()
+  target_link_libraries(imgui PUBLIC glfw)
+endif()
+
+target_link_libraries(main PRIVATE imgui)

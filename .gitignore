@@ -85,3 +85,4 @@ examples/ex-17/em_fetch.wasm
 
 # ex-18
 examples/ex-18/build/
+examples/ex-18/imgui.ini
