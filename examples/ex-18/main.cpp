@@ -20,6 +20,24 @@ float g_BgColor[4] = {0.0f, 0.1f, 0.2f, 1.0f};
 
 namespace {
 
+#ifdef _WIN32
+void applyImGuiScale(float scale) {
+  if (scale <= 0.0f) {
+    scale = 1.0f;
+  }
+
+  ImGuiStyle style;
+  ImGui::StyleColorsDark(&style);
+  style.ScaleAllSizes(scale);
+  style.FontScaleDpi = scale;
+  ImGui::GetStyle() = style;
+}
+
+void windowContentScaleCallback(GLFWwindow*, float xScale, float yScale) {
+  applyImGuiScale(xScale > 0.0f ? xScale : yScale);
+}
+#endif
+
 void renderFrame(GLFWwindow* window) {
   // Render ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
@@ -122,6 +140,9 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef _WIN32
+  glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+#endif
 #endif
 
   std::cout << "Create GLFW window" << std::endl;
@@ -167,6 +188,11 @@ int main() {
     shutdownGlfw(window);
     return -1;
   }
+
+#ifdef _WIN32
+  applyImGuiScale(ImGui_ImplGlfw_GetContentScaleForWindow(window));
+  glfwSetWindowContentScaleCallback(window, windowContentScaleCallback);
+#endif
 
 #ifdef __EMSCRIPTEN__
   const char* glslVersion = "#version 300 es";
