@@ -9,6 +9,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(main main.cpp)
 
 if(EMSCRIPTEN)
+  target_compile_definitions(main PRIVATE
+    GLFW_INCLUDE_ES3
+  )
+
   # Use the GLFW implementation included with Emscripten
   target_link_options(main PRIVATE
     "-sUSE_GLFW=3"
@@ -19,6 +23,10 @@ if(EMSCRIPTEN)
   # Same as specifying "-o main.js"
   set_target_properties(main PROPERTIES SUFFIX ".js")
 else()
+  target_compile_definitions(main PRIVATE
+    GLFW_INCLUDE_NONE
+  )
+
   include(FetchContent)
 
   # Disable building GLFW documentation, tests, and examples

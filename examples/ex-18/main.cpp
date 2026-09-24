@@ -1,11 +1,9 @@
 #include <iostream>
 
 #ifdef __EMSCRIPTEN__
-  #define GLFW_INCLUDE_ES3
   #include <emscripten.h>
   #include <emscripten/html5.h>
 #else
-  #define GLFW_INCLUDE_NONE
   #include <glad/gl.h>  // GLAD
 #endif
 
