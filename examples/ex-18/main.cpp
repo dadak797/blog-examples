@@ -178,7 +178,8 @@ int main() {
   // ImGui initialization
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO(); (void)io;
+  ImGuiIO& io = ImGui::GetIO();
+  io.Fonts->AddFontDefaultVector();
   ImGui::StyleColorsDark();
   if (!ImGui_ImplGlfw_InitForOpenGL(window, true)) {
     std::cerr << "Failed to initialize ImGui GLFW backend" << std::endl;
