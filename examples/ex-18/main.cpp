@@ -14,11 +14,13 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+// Initial background color
 float g_BgColor[4] = {0.0f, 0.1f, 0.2f, 1.0f};
 
 namespace {
 
 #ifdef _WIN32
+// Adjust the GUI scale to match the Windows display scale
 void applyImGuiScale(float scale) {
   if (scale <= 0.0f) {
     scale = 1.0f;
@@ -36,7 +38,10 @@ void windowContentScaleCallback(GLFWwindow*, float xScale, float yScale) {
 }
 #endif
 
+// Called every frame to render the application
 void renderFrame(GLFWwindow* window) {
+  glfwPollEvents();
+
   // Render ImGui frame
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
@@ -55,7 +60,6 @@ void renderFrame(GLFWwindow* window) {
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
   glfwSwapBuffers(window);
-  glfwPollEvents();
 }
 
 void framebufferSizeCallback(GLFWwindow*, int width, int height) {
@@ -75,6 +79,8 @@ void shutdownApplication(GLFWwindow* window) {
     EMSCRIPTEN_EVENT_TARGET_WINDOW, nullptr, false, nullptr);
   emscripten_set_fullscreenchange_callback(
     EMSCRIPTEN_EVENT_TARGET_DOCUMENT, nullptr, false, nullptr);
+  emscripten_set_wheel_callback(
+    "#canvas", nullptr, false, nullptr);
 #endif
 
   ImGui_ImplOpenGL3_Shutdown();
@@ -85,6 +91,7 @@ void shutdownApplication(GLFWwindow* window) {
 }
 
 #ifdef __EMSCRIPTEN__
+// Called when the browser window is resized
 EM_BOOL browserResizeCallback(
   int, const EmscriptenUiEvent* event, void* userData) {
   auto* window = static_cast<GLFWwindow*>(userData);
@@ -97,6 +104,7 @@ EM_BOOL browserResizeCallback(
   return EM_FALSE;
 }
 
+// Called by emscripten_set_main_loop_arg
 void browserMainLoop(void* argument) {
   auto* window = static_cast<GLFWwindow*>(argument);
 
@@ -125,7 +133,11 @@ int main() {
 
 #ifdef __EMSCRIPTEN__
   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+  glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
 
+  // Read the canvas CSS size and use it as the initial framebuffer size
   double canvasWidth;
   double canvasHeight;
   if (emscripten_get_element_css_size(
@@ -138,6 +150,9 @@ int main() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+#endif
 #ifdef _WIN32
   glfwWindowHint(GLFW_SCALE_TO_MONITOR, GLFW_TRUE);
 #endif
